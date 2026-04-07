@@ -14,7 +14,7 @@
 #include <string>
 #include <unordered_set>
 
-std::string kYourName = "STUDENT TODO"; // Don't forget to change this!
+std::string kYourName = "Zhao Xinrui"; // Don't forget to change this!
 
 /**
  * Takes in a file name and returns a set containing all of the applicant names as a set.
@@ -29,6 +29,13 @@ std::string kYourName = "STUDENT TODO"; // Don't forget to change this!
  */
 std::set<std::string> get_applicants(std::string filename) {
   // STUDENT TODO: Implement this function.
+  std::ifstream fp(filename);
+  std::string line;
+  std::set<std::string> applicants;
+  while (std::getline(fp, line)) {
+    applicants.insert(line);
+  }
+  return applicants;
 }
 
 /**
@@ -41,6 +48,19 @@ std::set<std::string> get_applicants(std::string filename) {
  */
 std::queue<const std::string*> find_matches(std::string name, std::set<std::string>& students) {
   // STUDENT TODO: Implement this function.
+  std::queue<const std::string*> matches;
+  char my_first_name = name[0];
+  size_t pos = name.find(' ');
+  char my_last_name = name[pos + 1];
+
+  for (auto it = students.begin(); it != students.end(); it++) {
+    const std::string& student_name = *it;
+    pos = name.find(' ');
+    if (student_name[0] == my_first_name && my_last_name == student_name[pos + 1]) {
+      matches.push(&student_name);
+    }
+  }
+  return matches;
 }
 
 /**
@@ -55,6 +75,11 @@ std::queue<const std::string*> find_matches(std::string name, std::set<std::stri
  */
 std::string get_match(std::queue<const std::string*>& matches) {
   // STUDENT TODO: Implement this function.
+  if (matches.empty()) {
+    return "NO MATCHES FOUND.";
+  }
+  const std::string* match = matches.front();
+  return *match;
 }
 
 /* #### Please don't remove this line! #### */
