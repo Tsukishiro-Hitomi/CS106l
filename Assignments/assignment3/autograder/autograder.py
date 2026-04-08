@@ -16,7 +16,10 @@ definitions: Set[Tuple[str, str]] = None
 
 
 def norm_path(path: os.PathLike) -> os.PathLike:
-    return os.path.normpath(os.path.relpath(path, os.getcwd()))
+    try:
+        return os.path.normpath(os.path.relpath(path, os.getcwd()))
+    except ValueError:
+        return os.path.normpath(path)
 
 
 def get_definitions(source_file: os.PathLike) -> Set[Tuple[str, str]]:
@@ -115,17 +118,27 @@ def setup():
             classes = global_namespace.classes()
         except:
             classes = []
-        cls_decl: declarations.class_t
+        
+        candidates = []
         for cls_decl in classes:
             location: declarations.location_t = cls_decl.location
             if norm_path(class_h_path) == norm_path(location.file_name):
-                return cls_decl
-        raise Exception(
-            "Couldn't find a class inside of class.h. Possible reasons:\n"
-            " - Did you define one?\n"
-            ' - Did you #include "class.h" inside main.cpp?\n'
-            " - Did you construct an instance of the class inside main.cpp?"
-        )
+                candidates.append(cls_decl)
+        
+        if not candidates:
+            raise Exception(
+                "Couldn't find a class inside of class.h. Possible reasons:\n"
+                " - Did you define one?\n"
+                ' - Did you #include "class.h" inside main.cpp?\n'
+                " - Did you construct an instance of the class inside main.cpp?"
+            )
+            
+        # 挑选出名字为 Student 的类
+        for c in candidates:
+            if c.name == "Student":
+                return c
+                
+        return candidates[-1]
 
     global class_decl
     class_decl = find_class_decl()
