@@ -56,7 +56,7 @@ public:
   {
     /* STUDENT_TODO: Implement this method! You will need to change the return
      * type. */
-    for (auto course: courses) {
+    for (const auto course: courses) {
       if (course.title == course_title) {
         return course;
       }
@@ -88,9 +88,16 @@ main(int argc, char* argv[])
     ********************************************************/
 
     /* STUDENT_TODO */
-    std::string output = course.and_then([](const Course& c) -> std::optional<std::string> { return "Found course: " + c.title + "," + c.number_of_units + "," + c.quarter + "\n"; })
+    // There are two ways to complete this: 
+
+    /* std::string output = course.and_then([](const Course& c) -> std::optional<std::string> { return "Found course: " + c.title + "," + c.number_of_units + "," + c.quarter + "\n"; })
                                 .or_else([]() -> std::optional<std::string> { return "Course not found.\n"; })
                                 .value();
+    */
+
+    // transform will wrap the return value into optional type automatically, so the return type of lambda function is just std::string
+    std::string output = course.transform([](const Course& c) -> std::string { return "Found course: " + c.title + "," + c.number_of_units + "," + c.quarter + "\n"; })
+                                .value_or("Course not found.\n");
 
     /********************************************************
      DO NOT MODIFY ANYTHING BELOW THIS LINE PLEASE
